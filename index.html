@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- css -->
+  <link 
+    rel="stylesheet" 
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""/>
+  <!-- js -->
+  <script 
+    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+    crossorigin=""></script>
+
+  <title>Document</title>
+
+  <style>
+      * {
+      box-sizing: border-box;
+    }
+
+    /* Create two equal columns that floats next to each other */
+    .left {
+      float: left;
+      width: 500px;
+      padding: 5px;
+      height: 95vh;
+    }
+    .right {
+      width: 100vw;
+      padding: 5px;
+      height: 95vh;
+    }
+    
+    #osmap {
+      height: 75%;
+      margin: 20px;
+    }
+
+  </style>
+
+  <script>
+    function change_species() {
+        var sel = document.getElementById("sp_select");
+
+        var sp = sel.options[sel.selectedIndex].text;
+
+        var sp_x = sel.options[sel.selectedIndex].value;
+        
+        document.getElementById("demo").innerHTML = "You selected: " + sp;
+        
+        document.getElementById("image").src = "images/" + sp +".png";
+
+      }
+
+      function change_threshold() {
+        
+        var sel = document.getElementById("sp_select");
+
+        var sp = sel.options[sel.selectedIndex].text;
+        
+        var thr_x = document.getElementById("thr_select").value;
+
+        document.getElementById("demo2").innerHTML = "You selected: " + thr_x;
+        
+        // remove the old polygon...
+        if(polygon){
+          map.eachLayer(function (layer) {
+             if (layer instanceof L.Polygon) {
+                 layer.remove()
+              }
+         });
+         }
+        
+        // load GeoJSON from an external file
+        var layer_url = "https://raw.githubusercontent.com/kemushi54/moth_data/main/geojson/" + sp + "_" + thr_x + ".geojson";
+        
+        polygon = fetch(layer_url)
+        .then(res => res.json())
+        .then(data => {
+          // add GeoJSON layer to the map once the file is loaded
+          L.geoJson(data).addTo(map);
+        });
+
+      }
+  </script>
+
+<script type="text/javascript" src="data/moth_list.json"></script>
+<script type="text/javascript" src="data/threshold_list.json"></script>
+<script src="test.json"></script>
+
+<script> var polygon; </script>
+
+</head>
+
+<body>
+  <h3>蛾類物種分布地圖</h3>
+  <div class="left">
+    <h3>物種分布地圖</h3>
+    <p>此圖為選擇的物種以 Maxent 預設的閥值產生的 11 種分布範圍。<br>
+      可透過滑鼠右鍵選擇新視窗開啟圖片來觀看原始大小的圖檔。</p>
+  <select name="" id="sp_select" onchange="change_species()"></select>
+
+
+    <p id="demo"></p>
+
+    <img id="image" width="480px" src="" alt="圖片" >
+
+  <script>
+      //Create array of options to be added
+      var n = species.length;
+
+      species_selector = "";
+
+      for (i = 0; i < n; i++) {
+        species_selector+="<option value='"+i+"'>"+species[i]+"</option>";
+      }
+      
+      document.getElementById("sp_select").innerHTML = species_selector;
+    </script>
+
+  </div>
+
+  <div class="right">
+    <h3>互動式地圖</h3>
+    <p>透過閥值篩選來選擇想要細看的分布地圖於互動式地圖區塊觀看</p>
+    <select name="" id="thr_select" onchange="change_threshold()"></select>
+    <p id="demo2"></p>
+    <script>
+      //Create array of options to be added
+      var n2 = threshold.length;
+
+      threshold_selector = "";
+
+      for (i = 0; i < n2; i++) {
+        threshold_selector+="<option value='"+threshold[i]+"'>"+threshold[i]+"</option>";
+      }
+      
+      document.getElementById("thr_select").innerHTML = threshold_selector;
+      </script>
+
+    <!--加入leaflet地圖-->
+    <div id="osmap"></div>
+    <script>
+      // 設定地圖中心點與放大級別
+      var mapOptions = {
+        center: [23.773, 120.959],
+        zoom: 8
+         }
+      const map = L.map("osmap", mapOptions);
+
+      // Creating OSM Layer object
+      var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+      map.addLayer(layer);      // Adding layer to the map
+
+      //加入比例尺
+      L.control.scale({
+          position: 'bottomleft'
+      }).addTo(map);
+      </script>
+      
+    </div>
+
+  </body>
+</html>
