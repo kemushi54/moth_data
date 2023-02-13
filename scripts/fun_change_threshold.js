@@ -18,8 +18,8 @@ function change_threshold() {
      }
     
     // load GeoJSON from an external file
-    //var layer_url = "https://raw.githubusercontent.com/kemushi54/moth_data/main/data/polygon/" + sp + "_" + thr_x + ".geojson";
-    var layer_url = "https://raw.githubusercontent.com/kemushi54/moth_data/main/geojson/" + sp + "_" + thr_x + ".geojson";
+    var layer_url = "https://raw.githubusercontent.com/kemushi54/moth_data/main/data/polygon/" + sp + "_" + thr_x + ".geojson";
+    //var layer_url = "https://raw.githubusercontent.com/kemushi54/moth_data/main/geojson/" + sp + "_" + thr_x + ".geojson";
     
     polygon = fetch(layer_url)
     .then(res => res.json())
