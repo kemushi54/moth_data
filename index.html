@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>蛾類物種分布地圖</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- css -->
@@ -14,64 +15,45 @@
     src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
     crossorigin=""></script>
+    <script src = "scripts/fun_change_species.js"></script>
+    <script src =  "scripts/fun_change_threshold.js"></script>
+    <script src = "scripts/fun_renew.js"></script>
+    <script src = "scripts/fun_remove_layer.js"></script>
+    <script> var polygon; var points;</script>
+    <!-- data -->
+    <script type="text/javascript" src="data/moth_list.json"></script>
+    <script type="text/javascript" src="data/threshold_list.json"></script>
+    <script src="test.json"></script>
 
-  <title>Document</title>
+  <!-- css -->
+  <link rel="stylesheet" href="styles/style.css">
 
-  <style>
-      * {
-      box-sizing: border-box;
-    }
-
-    /* Create two equal columns that floats next to each other */
-    .left {
-      float: left;
-      width: 500px;
-      padding: 5px;
-      height: 95vh;
-    }
-    .right {
-      width: 100vw;
-      padding: 5px;
-      height: 95vh;
-    }
-    
-    #osmap {
-      height: 75%;
-      margin: 20px;
-    }
-
-  </style>
-
-<script type="text/javascript" src="data/moth_list.json"></script>
-<script type="text/javascript" src="data/threshold_list.json"></script>
-<script src="test.json"></script>
-<script src = "scripts/fun_change_species.js"></script>
-<script src =  "scripts/fun_change_threshold.js"></script>
-
-<script> var polygon; </script>
 
 </head>
 
 <body>
-  <h3>蛾類物種分布地圖</h3>
-  <div class="left">
-    <h3>物種分布地圖</h3>
-    <p>此圖為選擇的物種以 Maxent 預設的閥值產生的 11 種分布範圍。<br>
-      可透過滑鼠右鍵選擇新視窗開啟圖片來觀看原始大小的圖檔。</p>
+  <div class="grid">
     
-    <form name="species_form">
-    
-      學名開頭：
-      <select size = 5 id="starter" onchange="renew(this.selectedIndex);">
-        <script>
-          const alphabet = [];
-          for (let i = 65; i <= 90; i++) {
-            alphabet.push(String.fromCharCode(i));
-          }
+    <h1 id="header">蛾類物種分布地圖</h1>
 
-          var n = alphabet.length;
+    <div id="left" class="grid-item">
+      <h2>物種分布地圖</h2>
+      <p style="font-size: 16px;">物種分布地圖為每個物種以 Maxent 預設的閥值所產生的 11 種分布範圍。
+        可透過於圖上點擊滑鼠右鍵選擇「以新視窗開啟圖片」來觀看原始大小的圖檔。</p>
+        <form name="species_form">
+          
+          <p>學名開頭字母：
 
-          for (i = 0; i < n; i++) {
+        <select id="starter" onchange="renew(this.selectedIndex);">
+          <script>
+            const alphabet = [];
+            for (let i = 65; i <= 90; i++) {
+              alphabet.push(String.fromCharCode(i));
+            }
+            
+            var n = alphabet.length;
+            
+            for (i = 0; i < n; i++) {
             document.writeln("<option value='" + i + "'>" + alphabet[i] + "</option>");
           }
           </script>
@@ -83,70 +65,70 @@
           for (let i = 0; i < 26; i++) {
             alphabet_species[i] = [];
           }
-
+          
           species.forEach(function(item) {
             const index = item.charCodeAt(0) - 65;
             alphabet_species[index].push(item);
           });
-
-          // Create options according to alphabet selected
-          function renew(index){
-            for(var i = 0; i < alphabet_species[index].length; i++)
-            document.species_form.sp_select.options[i]=new Option(alphabet_species[index][i], i);	// 設定新選項
-            document.species_form.sp_select.length=alphabet_species[index].length;	// 刪除多餘的選項
+          
+          </script>
+          </p>
+          
+          <p>物種清單：</p>
+          <select size = 4 name="sp_select" id="sp_select" onchange="change_species()">
+            <option value="" disabled selected>---- 選擇學名開頭來瀏覽物種清單 ----</option>
+          </select>
+        </form>
+        
+        <p id="demo" style="font-size: 12px;"></p>
+        
+        <img id="image" width="460px" src="" alt="請先於上方選擇物種來觀看分布圖" >
+    </div>
+      
+    <div id="right" class="grid-item">
+      <form action="">
+        <h2>互動式地圖</h2>
+        <p>選擇閥值於下方互動式地圖區塊瀏覽物種的分布範圍。</p>
+        <select name="" id="thr_select" onchange="change_threshold()">
+          <option value="" disabled selected>---- 選擇一個閥值 ----</option>
+          <script>
+          //Create array of options to be added
+          var n2 = threshold.length;
+          for (i = 0; i < n2; i++) {
+            document.writeln("<option value='" + threshold[i] + "'>" + threshold[i] + "</option>");
           }
-
-        </script>
-
-      物種清單：
-      <select size = 5 name="sp_select" id="sp_select" onchange="change_species()">
-          <option value="" disabled selected>---- 選擇左邊字母來瀏覽物種清單 ----</option>
-      </select>
-    </form>
-
-    <p id="demo"></p>
-
-    <img id="image" width="480px" src="" alt="圖片" >
-
-  </div>
-
-  <div class="right">
-    <h3>互動式地圖</h3>
-    <p>透過閥值篩選來選擇想要細看的分布地圖於互動式地圖區塊觀看</p>
-    <select name="" id="thr_select" onchange="change_threshold()">
-      <option value="" disabled selected>---- 選擇一個閥值 ----</option>
-    <script>
-      //Create array of options to be added
-      var n2 = threshold.length;
-      for (i = 0; i < n2; i++) {
-        document.writeln("<option value='" + threshold[i] + "'>" + threshold[i] + "</option>");
-      }
-      </script>
-    </select>
-    <p id="demo2"></p>
-
-    <!--加入leaflet地圖-->
-    <div id="osmap"></div>
-    <script>
-      // 設定地圖中心點與放大級別
-      var mapOptions = {
+          </script>
+        </select>
+        <input id="rm_layer" type=button value="清除顯示圖層" onClick="remove_layer()">
+        <input id="rm_point" type=button value="清除物種點位" onClick="remove_point()">
+      </form>
+  
+      <p id="demo2" style="font-size: 12px;"></p>
+  
+      <!--加入leaflet地圖-->
+      <div id="osmap"></div>
+      <script>
+        // 設定地圖中心點與放大級別
+        var mapOptions = {
         center: [23.773, 120.959],
         zoom: 8
-         }
-      const map = L.map("osmap", mapOptions);
+        }
+        const map = L.map("osmap", mapOptions);
+    
+        // Creating OSM Layer object
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+          map.addLayer(layer);      // Adding layer to the map
 
-      // Creating OSM Layer object
-      var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
-      map.addLayer(layer);      // Adding layer to the map
-
-      //加入比例尺
-      L.control.scale({
+        //加入比例尺
+        L.control.scale({
           position: 'bottomleft'
-      }).addTo(map);
+        }).addTo(map);
+      
       </script>
       
     </div>
-
+  </div>
+    
   </body>
 </html>

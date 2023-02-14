@@ -1,0 +1,43 @@
+body {
+    background-color: whitesmoke;
+}
+
+#header {
+    grid-area: header;
+    padding: 15px 0px;
+    text-align: center;
+    font-size: 36px;
+    font-family: sans-serif;
+    color: whitesmoke;
+    background-color: rgb(49, 49, 49);
+    border-radius: 15px;
+}
+
+
+h2, p, img {
+    color: rgb(49, 49, 49);
+    font-family: sans-serif;
+}
+
+h2 {
+    font-size: 24px;
+    margin: 0px;
+}
+
+.grid {
+    display: grid;
+    grid-template-areas: 
+    'header header ' 
+    'left right';
+    grid-template-columns: 480px auto;
+}
+
+.grid-item {
+    padding: 0 20px;
+    background-color: whitesmoke;
+    height: 80vh;
+}
+
+#osmap {
+    height: 80%;
+}
