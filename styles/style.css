@@ -11,6 +11,7 @@ body {
     color: whitesmoke;
     background-color: rgb(49, 49, 49);
     border-radius: 15px;
+    margin: 5px 0px 20px 0px;
 }
 
 
@@ -20,6 +21,7 @@ h2, p, img {
 }
 
 h2 {
+    display: inline-flex;
     font-size: 24px;
     margin: 0px;
 }
@@ -36,6 +38,12 @@ h2 {
     padding: 0 20px;
     background-color: whitesmoke;
     height: 80vh;
+}
+
+
+input, select {
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 #osmap {

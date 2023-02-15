@@ -5,7 +5,7 @@ function change_species() {
 
     var sp_x = sel.options[sel.selectedIndex].value;
     
-    document.getElementById("demo").innerHTML = "You selected: " + sp;
+    document.getElementById("demo").innerHTML = "You selected: " + "<i>" + sp + "</i>";
     
     document.getElementById("image").src = "images/" + sp +".png";
 
